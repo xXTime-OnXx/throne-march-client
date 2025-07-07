@@ -1,0 +1,17 @@
+<div class="resource-bar">
+  <app-resource [resourceType]="ResourceType.WOOD" [value]="village()?.wood ?? 0"/>
+  <app-resource [resourceType]="ResourceType.STONE" [value]="village()?.stone ?? 0"/>
+  <app-resource [resourceType]="ResourceType.IRON" [value]="village()?.iron ?? 0"/>
+  <app-resource [resourceType]="ResourceType.GOLD" [value]="village()?.gold ?? 0"/>
+</div>
+
+<h2>Buildings</h2>
+<div class="buildings-container">
+  @for(building of buildings; track building) {
+    <div class="building">
+      <h3>{{ building }}</h3>
+      <div>Level: {{ getBuildingByType(building)?.level ?? 0 }}</div>
+      <button (click)="upgradeBuilding(building)">Upgrade</button>
+    </div>
+  }
+</div>
