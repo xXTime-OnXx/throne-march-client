@@ -1,0 +1,7 @@
+<div class="card">
+  <img [ngSrc]="'icons/buildings/' + building()!.type.toLowerCase() + '.png'" [alt]="building()?.type" width="256" height="256" priority/>
+  <div class="row">
+    <div>Level: {{ building()?.level ?? 0 }}</div>
+    <button (click)="upgradeBuilding()">{{ improveButtonText() }}</button>
+  </div>
+</div>

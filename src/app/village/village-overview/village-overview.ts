@@ -4,12 +4,13 @@ import {ResourceType} from '../../shared/ui/resource/resource.type';
 import {VillageService} from '../data/service/village.service';
 import {Village} from '../data/type/village';
 import {Building, BuildingType} from '../data/type/building';
-import {BuildingService} from '../data/service/building.service';
+import {BuildingCard} from '../building-card/building-card';
 
 @Component({
   selector: 'app-village-overview',
   imports: [
-    Resource
+    Resource,
+    BuildingCard
   ],
   templateUrl: './village-overview.html',
   styleUrl: './village-overview.scss'
@@ -17,19 +18,19 @@ import {BuildingService} from '../data/service/building.service';
 export class VillageOverview implements OnInit {
 
   private villageService = inject(VillageService);
-  private buildingService = inject(BuildingService);
 
   protected readonly ResourceType = ResourceType;
 
   public village = signal<Village | undefined>(undefined);
-  public buildings: BuildingType[] = Object.values(BuildingType)
+  public buildings = signal<Building[]>([]);
 
   async ngOnInit(): Promise<void> {
-    await this.updateVillage();
+    await this.loadVillageData();
   }
 
-  private async updateVillage() {
+  private async loadVillageData() {
     this.village.set(await this.villageService.getVillage(1));
+    this.buildings.set(this.createBuildingListFromVillage());
   }
 
   public getBuildingByType(type: BuildingType): Building | undefined {
@@ -37,16 +38,28 @@ export class VillageOverview implements OnInit {
     return village?.buildings.find(b => b.type === type);
   }
 
-  public async upgradeBuilding(buildingType: BuildingType): Promise<void> {
-    if (this.village() === undefined) {
-      return;
+  private createBuildingListFromVillage(): Building[] {
+    const buildings = [];
+    for (const buildingType of Object.values(BuildingType)) {
+      const building = this.getBuildingByType(buildingType);
+      if (building) {
+        buildings.push(building);
+      } else {
+        buildings.push(this.createNonBuiltBuilding(buildingType));
+      }
     }
-    const building = this.getBuildingByType(buildingType);
-    if (!building) {
-      await this.buildingService.create(this.village()!, buildingType);
-    } else {
-      await this.buildingService.upgrade(this.village()!, building!)
-    }
-    await this.updateVillage();
+    return buildings;
+  }
+
+  private createNonBuiltBuilding(buildingType: BuildingType): Building {
+    return {
+      villageId: this.village()!.id!,
+      type: buildingType,
+      level: 0
+    };
+  }
+
+  async reloadBuildings(): Promise<void> {
+    await this.loadVillageData();
   }
 }

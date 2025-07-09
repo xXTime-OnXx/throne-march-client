@@ -7,11 +7,9 @@
 
 <h2>Buildings</h2>
 <div class="buildings-container">
-  @for(building of buildings; track building) {
+  @for(building of buildings(); track building) {
     <div class="building">
-      <h3>{{ building }}</h3>
-      <div>Level: {{ getBuildingByType(building)?.level ?? 0 }}</div>
-      <button (click)="upgradeBuilding(building)">Upgrade</button>
+      <app-building-card [building]="building" (updated)="reloadBuildings()"></app-building-card>
     </div>
   }
 </div>

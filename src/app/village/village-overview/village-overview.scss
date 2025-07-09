@@ -9,11 +9,8 @@
 }
 
 .buildings-container {
-  padding: 0 20px
-}
-
-.building {
+  padding: 0 20px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
